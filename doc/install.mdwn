@@ -1,8 +1,0 @@
-`git clone git://myrepos.branchable.com/ myrepos`  
-Or get it [from github](https://github.com/joeyh/myrepos).
-
-It's a simple perl script, which can be copied anywhere to install.
-
-Debian: `apt-get install myrepos`  
-Homebrew: `brew install mr`  
-FreeBSD: `pkg install myrepos`  
