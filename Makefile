@@ -1,4 +1,4 @@
-PREFIX:=/usr
+PREFIX:=/usr/local
 
 mans=mr.1 webcheckout.1
 
@@ -27,6 +27,12 @@ install: build
 	install -m0644 webcheckout.1 ${DESTDIR}${PREFIX}/share/man/man1/
 
 	install -m0644 lib/* ${DESTDIR}${PREFIX}/share/mr/
+
+uninstall:
+	rm -rf ${DESTDIR}${PREFIX}/bin/mr
+	rm -rf ${DESTDIR}${PREFIX}/bin/webcheckout
+	rm -rf ${DESTDIR}${PREFIX}/share/man/man1/mr.1
+	rm -rf ${DESTDIR}${PREFIX}/share/man/man1/webcheckout.1
 
 clean:
 	rm -f $(mans)
