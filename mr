@@ -680,9 +680,17 @@ my $terminal=-t STDOUT && $have_pty;
 my $erase_line=$terminal && eval{require Term::Cap;my $t=Term::Cap->Tgetent();$t->Tputs('ce');};
 
 eval { require File::HomeDir; $ENV{HOME} = File::HomeDir->my_home; 1; };
-my $HOME_MR_CONFIG = "$ENV{HOME}/.mrconfig";
 
-my $HOME_MR_CACHE = "$ENV{HOME}/.mrcache";
+# NOTE: This is broken and not anywhere near XDG
+# compliant, it needs a bunch more fall back logic.
+# If required directories are not set, the program will
+# crash.
+# TODO: create directories if they cannot be found.
+my $config_dir = $ENV{XDG_CONFIG_HOME} || "$ENV{HOME}/.config";
+my $cache_dir = $ENV{XDG_CACHE_HOME} || "$ENV{HOME}/.cache";
+
+my $HOME_MR_CONFIG = $config_dir."/mr/config";
+my $HOME_MR_CACHE = $cache_dir."/mr/cache";
 
 $ENV{MR_CONFIG}=find_mrconfig();
 
@@ -1466,7 +1474,7 @@ sub is_trusted_config {
 
 	return 1 if $trust_all;
 
-	my $trustfile=$ENV{HOME}."/.mrtrust";
+	my $trustfile=$config_dir."/mr/trust";
 
 	if (! %trusted) {
 		$trusted{$HOME_MR_CONFIG}=1;
@@ -1487,7 +1495,7 @@ sub is_trusted_config {
 
 sub is_trusted_repo {
 	my $repo=shift;
-	
+
 	# Tightly limit what is allowed in a repo name.
 	# No ../, no absolute paths, and no unusual filenames
 	# that might try to escape to the shell.
@@ -1497,12 +1505,12 @@ sub is_trusted_repo {
 
 sub is_trusted_checkout {
 	my $command=shift;
-	
+
 	# To determine if the command is safe, compare it with the
 	# *_trusted_checkout config settings. Those settings are
 	# templates for allowed commands, so make sure that each word
 	# of the command matches the corresponding word of the template.
-	
+
 	my @words;
 	foreach my $word (split(' ', $command)) {
 		# strip quoting
